@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[LruCache源码分析]]></title>
+    <title><![CDATA[关于源码的博客]]></title>
+    <url>%2F2018%2F05%2F17%2F%E5%85%B3%E4%BA%8E%E6%BA%90%E7%A0%81%E7%9A%84%E5%8D%9A%E5%AE%A2%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[LruCache源码思考]]></title>
     <url>%2F2018%2F05%2F17%2FLruCache%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%2F</url>
-    <content type="text"><![CDATA[LruCache提供了最常用数据内存存储的解决方案，它是如何实现的呢？ 源码来源：Android API 25 Platform LruCache的初始化]]></content>
+    <content type="text"><![CDATA[LruCache提供了最常用数据内存存储的解决方案，它是如何实现的呢？ 源码来源：Android API 25 Platform LruCache的初始化123456789101112 /** * @param maxSize for caches that do not override &#123;@link #sizeOf&#125;, this is * the maximum number of entries in the cache. For all other caches, * this is the maximum sum of the sizes of the entries in this cache. */public LruCache(int maxSize) &#123; if (maxSize &lt;= 0) &#123; throw new IllegalArgumentException("maxSize &lt;= 0"); &#125; this.maxSize = maxSize; this.map = new LinkedHashMap&lt;K, V&gt;(0, 0.75f, true);&#125;]]></content>
       <categories>
         <category>源码</category>
       </categories>
@@ -11,6 +16,18 @@
         <tag>LruCache</tag>
         <tag>源码</tag>
         <tag>分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[关于源码分析的思考]]></title>
+    <url>%2F2018%2F05%2F17%2F%E5%85%B3%E4%BA%8E%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E7%9A%84%E6%80%9D%E8%80%83%2F</url>
+    <content type="text"><![CDATA[关于博客中的源码分析，我希望能在程序设计和解决问题的角度去分析源码，以便这些源码的设计思想能在后续的开发中有效利用。]]></content>
+      <categories>
+        <category>源码</category>
+      </categories>
+      <tags>
+        <tag>源码</tag>
+        <tag>思考</tag>
       </tags>
   </entry>
   <entry>

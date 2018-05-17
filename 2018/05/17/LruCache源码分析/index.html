@@ -87,14 +87,14 @@
 <meta name="description" content="LruCache提供了最常用数据内存存储的解决方案，它是如何实现的呢？">
 <meta name="keywords" content="LruCache,源码,分析">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LruCache源码分析">
+<meta property="og:title" content="LruCache源码思考">
 <meta property="og:url" content="http://csdroid.github.com/2018/05/17/LruCache源码分析/index.html">
 <meta property="og:site_name" content="csdroid">
 <meta property="og:description" content="LruCache提供了最常用数据内存存储的解决方案，它是如何实现的呢？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-17T07:34:48.392Z">
+<meta property="og:updated_time" content="2018-05-17T08:14:02.070Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LruCache源码分析">
+<meta name="twitter:title" content="LruCache源码思考">
 <meta name="twitter:description" content="LruCache提供了最常用数据内存存储的解决方案，它是如何实现的呢？">
 
 
@@ -131,7 +131,7 @@
 
 
 
-  <title>LruCache源码分析 | csdroid</title>
+  <title>LruCache源码思考 | csdroid</title>
   
 
 
@@ -319,7 +319,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">LruCache源码分析</h1>
+          <h1 class="post-title" itemprop="name headline">LruCache源码思考</h1>
         
 
         <div class="post-meta">
@@ -347,7 +347,7 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2018-05-17T15:34:48+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2018-05-17T16:14:02+08:00">
                 2018-05-17
               </time>
             
@@ -408,7 +408,8 @@
 <blockquote>
 <p>源码来源：Android API 25 Platform</p>
 </blockquote>
-<h4 id="LruCache的初始化"><a href="#LruCache的初始化" class="headerlink" title="LruCache的初始化"></a>LruCache的初始化</h4>
+<h4 id="LruCache的初始化"><a href="#LruCache的初始化" class="headerlink" title="LruCache的初始化"></a>LruCache的初始化</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> maxSize for caches that do not override &#123;<span class="doctag">@link</span> #sizeOf&#125;, this is</span></span><br><span class="line"><span class="comment">     *     the maximum number of entries in the cache. For all other caches,</span></span><br><span class="line"><span class="comment">     *     this is the maximum sum of the sizes of the entries in this cache.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">LruCache</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (maxSize &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"maxSize &lt;= 0"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.maxSize = maxSize;</span><br><span class="line">    <span class="keyword">this</span>.map = <span class="keyword">new</span> LinkedHashMap&lt;K, V&gt;(<span class="number">0</span>, <span class="number">0.75f</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -442,8 +443,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/04/25/two-sum/" rel="next" title="两数之和">
-                <i class="fa fa-chevron-left"></i> 两数之和
+              <a href="/2018/05/17/关于源码分析的思考/" rel="next" title="关于源码分析的思考">
+                <i class="fa fa-chevron-left"></i> 关于源码分析的思考
               </a>
             
           </div>
@@ -451,6 +452,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/17/关于源码的博客/" rel="prev" title="关于源码的博客">
+                关于源码的博客 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -527,7 +532,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -549,7 +554,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
