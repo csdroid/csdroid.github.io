@@ -84,18 +84,15 @@
 
 
 
-<meta name="description" content="LruCache提供了最常用数据内存存储的解决方案，它是如何实现的呢？">
 <meta name="keywords" content="LruCache,源码,分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LruCache源码思考">
 <meta property="og:url" content="http://csdroid.github.com/2018/05/17/LruCache源码分析/index.html">
 <meta property="og:site_name" content="csdroid">
-<meta property="og:description" content="LruCache提供了最常用数据内存存储的解决方案，它是如何实现的呢？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-17T08:14:02.070Z">
+<meta property="og:updated_time" content="2018-05-17T13:18:33.431Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LruCache源码思考">
-<meta name="twitter:description" content="LruCache提供了最常用数据内存存储的解决方案，它是如何实现的呢？">
 
 
 
@@ -347,7 +344,7 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2018-05-17T16:14:02+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2018-05-17T21:18:33+08:00">
                 2018-05-17
               </time>
             
@@ -403,13 +400,7 @@
       
 
       
-        <p>LruCache提供了<strong>最常用数据</strong>内存存储的解决方案，它是如何实现的呢？</p>
-<a id="more"></a>
-<blockquote>
-<p>源码来源：Android API 25 Platform</p>
-</blockquote>
-<h4 id="LruCache的初始化"><a href="#LruCache的初始化" class="headerlink" title="LruCache的初始化"></a>LruCache的初始化</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> maxSize for caches that do not override &#123;<span class="doctag">@link</span> #sizeOf&#125;, this is</span></span><br><span class="line"><span class="comment">     *     the maximum number of entries in the cache. For all other caches,</span></span><br><span class="line"><span class="comment">     *     this is the maximum sum of the sizes of the entries in this cache.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">LruCache</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (maxSize &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"maxSize &lt;= 0"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.maxSize = maxSize;</span><br><span class="line">    <span class="keyword">this</span>.map = <span class="keyword">new</span> LinkedHashMap&lt;K, V&gt;(<span class="number">0</span>, <span class="number">0.75f</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+        
       
     </div>
     
@@ -503,17 +494,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -573,22 +555,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#LruCache的初始化"><span class="nav-number">1.</span> <span class="nav-text">LruCache的初始化</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
