@@ -84,18 +84,18 @@
 
 
 
-<meta name="description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照最近最少使用频率的排序形式； 最近最少使用的数据的管理； 良好的灵活性。">
+<meta name="description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照数据的访问顺序排序； 最近最少使用的数据的管理； 良好的灵活性。">
 <meta name="keywords" content="LruCache,源码,分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LruCache源码思考">
 <meta property="og:url" content="http://csdroid.github.com/2018/05/17/LruCache源码分析/index.html">
 <meta property="og:site_name" content="csdroid">
-<meta property="og:description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照最近最少使用频率的排序形式； 最近最少使用的数据的管理； 良好的灵活性。">
+<meta property="og:description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照数据的访问顺序排序； 最近最少使用的数据的管理； 良好的灵活性。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-18T07:13:03.677Z">
+<meta property="og:updated_time" content="2018-05-18T07:14:46.490Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LruCache源码思考">
-<meta name="twitter:description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照最近最少使用频率的排序形式； 最近最少使用的数据的管理； 良好的灵活性。">
+<meta name="twitter:description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照数据的访问顺序排序； 最近最少使用的数据的管理； 良好的灵活性。">
 
 
 
@@ -347,7 +347,7 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2018-05-18T15:13:03+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2018-05-18T15:14:46+08:00">
                 2018-05-18
               </time>
             
@@ -407,7 +407,7 @@
 <p>LruCache的特点：</p>
 <ol>
 <li>最大数据存储容量的限制；</li>
-<li>按照最近最少使用频率的排序形式；</li>
+<li>按照数据的访问顺序排序；</li>
 <li>最近最少使用的数据的管理；</li>
 <li>良好的灵活性。</li>
 </ol>
