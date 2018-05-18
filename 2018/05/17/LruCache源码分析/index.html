@@ -84,15 +84,18 @@
 
 
 
+<meta name="description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照最近最少使用频率的排序形式； 最近最少使用的数据的管理； 良好的灵活性。">
 <meta name="keywords" content="LruCache,源码,分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LruCache源码思考">
 <meta property="og:url" content="http://csdroid.github.com/2018/05/17/LruCache源码分析/index.html">
 <meta property="og:site_name" content="csdroid">
+<meta property="og:description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照最近最少使用频率的排序形式； 最近最少使用的数据的管理； 良好的灵活性。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-17T13:18:33.431Z">
+<meta property="og:updated_time" content="2018-05-18T07:13:03.677Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LruCache源码思考">
+<meta name="twitter:description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照最近最少使用频率的排序形式； 最近最少使用的数据的管理； 良好的灵活性。">
 
 
 
@@ -344,8 +347,8 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2018-05-17T21:18:33+08:00">
-                2018-05-17
+              <time title="更新于" itemprop="dateModified" datetime="2018-05-18T15:13:03+08:00">
+                2018-05-18
               </time>
             
           </span>
@@ -400,7 +403,66 @@
       
 
       
-        
+        <p>LruCache是内存缓存数据存储的经典方案，该存储结构通过删除<strong>最近最少使用</strong>的数据，以使最常用数据发挥更有效的作用。</p>
+<p>LruCache的特点：</p>
+<ol>
+<li>最大数据存储容量的限制；</li>
+<li>按照最近最少使用频率的排序形式；</li>
+<li>最近最少使用的数据的管理；</li>
+<li>良好的灵活性。</li>
+</ol>
+<a id="more"></a>
+<blockquote>
+<p>源码来源：Android API 25 Platform</p>
+</blockquote>
+<h4 id="最大数据存储的限制"><a href="#最大数据存储的限制" class="headerlink" title="最大数据存储的限制"></a>最大数据存储的限制</h4><p>最大数据存储的限制是Lru算法开始发挥作用的起点，当数据容量超过设置的最大数据容量时，Lru算法开始发挥作用，删除最近最少使用的数据，直到低于设置的最大容量。</p>
+<p>最大数据设置的灵活性：</p>
+<ul>
+<li><p>在创建LruCache对象时，设置默认的最大值；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> maxSize for caches that do not override &#123;<span class="doctag">@link</span> #sizeOf&#125;, this is</span></span><br><span class="line"><span class="comment">     *     the maximum number of entries in the cache. For all other caches,</span></span><br><span class="line"><span class="comment">     *     this is the maximum sum of the sizes of the entries in this cache.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">LruCache</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (maxSize &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"maxSize &lt;= 0"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.maxSize = maxSize;</span><br><span class="line">    <span class="keyword">this</span>.map = <span class="keyword">new</span> LinkedHashMap&lt;K, V&gt;(<span class="number">0</span>, <span class="number">0.75f</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>向外暴露接口设置最大值</p>
+<p>一旦最大值变化，重新对已存储的数据大小进行检验，若当前存储的数据大小超过新设置的最大值，则精简缓存.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Sets the size of the cache.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> maxSize The new maximum size.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">resize</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (maxSize &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"maxSize &lt;= 0"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// 支持线程安全</span></span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.maxSize = maxSize;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 真正的缓存精简由该方法实现，以上做安全校验。</span></span><br><span class="line">    trimToSize(maxSize);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="数据的存储顺序"><a href="#数据的存储顺序" class="headerlink" title="数据的存储顺序"></a>数据的存储顺序</h4><p>在创建LruCache对象时，直接初始化了LinkedHashMap的数据结构来存储数据，并按照访问顺序来进行排序。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">this</span>.map = <span class="keyword">new</span> LinkedHashMap&lt;K, V&gt;(<span class="number">0</span>, <span class="number">0.75f</span>, <span class="keyword">true</span>);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>关于LinkedHashMap</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt; 	<span class="comment">/**</span></span><br><span class="line"><span class="comment">&gt;      * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;/tt&gt; instance with the</span></span><br><span class="line"><span class="comment">&gt;      * specified initial capacity, load factor and ordering mode.</span></span><br><span class="line"><span class="comment">&gt;      *</span></span><br><span class="line"><span class="comment">&gt;      * <span class="doctag">@param</span>  initialCapacity the initial capacity</span></span><br><span class="line"><span class="comment">&gt;      * <span class="doctag">@param</span>  loadFactor      the load factor</span></span><br><span class="line"><span class="comment">&gt;      * <span class="doctag">@param</span>  accessOrder     the ordering mode - &lt;tt&gt;true&lt;/tt&gt; for</span></span><br><span class="line"><span class="comment">&gt;      *         access-order, &lt;tt&gt;false&lt;/tt&gt; for insertion-order</span></span><br><span class="line"><span class="comment">&gt;      * <span class="doctag">@throws</span> IllegalArgumentException if the initial capacity is negative</span></span><br><span class="line"><span class="comment">&gt;      *         or the load factor is nonpositive</span></span><br><span class="line"><span class="comment">&gt;      */</span></span><br><span class="line">&gt;     <span class="function"><span class="keyword">public</span> <span class="title">LinkedHashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity,</span></span></span><br><span class="line"><span class="function"><span class="params">&gt;                          <span class="keyword">float</span> loadFactor,</span></span></span><br><span class="line"><span class="function"><span class="params">&gt;                          <span class="keyword">boolean</span> accessOrder)</span> </span>&#123;</span><br><span class="line">&gt;         <span class="keyword">super</span>(initialCapacity, loadFactor);</span><br><span class="line">&gt;         <span class="keyword">this</span>.accessOrder = accessOrder;</span><br><span class="line">&gt;     &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<ol>
+<li><p>通过链表实现数据的有序存储；</p>
+</li>
+<li><p><code>accessOrder</code>确定了链表中数据的排序方式：</p>
+<p><code>false</code>:按照数据的插入顺序存储；</p>
+<p><code>true</code>:按照数据的访问顺序存储，最近访问的数据放到链表的末端；若在遍历链表前，没有数据的访问，则按照插入时的顺序遍历。</p>
+<p><strong>访问排序的实现</strong>：</p>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="comment">// 该方法的最终目的是：把最近访问的元素放到链表最后；</span></span><br><span class="line">&gt; <span class="comment">// e:最近访问的元素</span></span><br><span class="line">&gt; <span class="function"><span class="keyword">void</span> <span class="title">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// move node to last</span></span><br><span class="line">&gt;     LinkedHashMapEntry&lt;K,V&gt; last;</span><br><span class="line">&gt;     <span class="comment">// 排序前条件判断：1.是访问排序；2.最后一个元素不是我们要插入的元素</span></span><br><span class="line">&gt;     <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line">&gt;         LinkedHashMapEntry&lt;K,V&gt; p =</span><br><span class="line">&gt;             (LinkedHashMapEntry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">&gt;         <span class="comment">// 1. 重置p节点的尾节点；</span></span><br><span class="line">&gt;         p.after = <span class="keyword">null</span>;</span><br><span class="line">&gt;         <span class="comment">// 2. 判断p的头节点是否是链表头节点；</span></span><br><span class="line">&gt;         <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">&gt;             head = a;</span><br><span class="line">&gt;         <span class="keyword">else</span></span><br><span class="line">&gt;             b.after = a;</span><br><span class="line">&gt;         <span class="comment">// 3. 判断p的尾节点是否是链表的尾节点；</span></span><br><span class="line">&gt;         <span class="keyword">if</span> (a != <span class="keyword">null</span>)</span><br><span class="line">&gt;             a.before = b;</span><br><span class="line">&gt;         <span class="keyword">else</span></span><br><span class="line">&gt;             last = b;</span><br><span class="line">&gt;         <span class="comment">// 4. 将p节点连接到链表的尾节点；</span></span><br><span class="line">&gt;         <span class="keyword">if</span> (last == <span class="keyword">null</span>)</span><br><span class="line">&gt;             head = p;</span><br><span class="line">&gt;         <span class="keyword">else</span> &#123;</span><br><span class="line">&gt;             p.before = last;</span><br><span class="line">&gt;             last.after = p;</span><br><span class="line">&gt;         &#125;</span><br><span class="line">&gt;         <span class="comment">// 5. 将p节点赋予到尾节点；</span></span><br><span class="line">&gt;         tail = p;</span><br><span class="line">&gt;         ++modCount;</span><br><span class="line">&gt;     &#125;</span><br><span class="line">&gt; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="最近最少使用的数据的删除"><a href="#最近最少使用的数据的删除" class="headerlink" title="最近最少使用的数据的删除"></a>最近最少使用的数据的删除</h4><p>Q：哪个元素是<strong>最近最少</strong>使用的元素？</p>
+<p>A：按照<em>访问排序</em>的实现，访问排序会将最近访问的元素放在链表的底部，那头部的节点就是<em>最近最少</em>使用的元素。</p>
+<p>Q：删除<em>最近最少</em>使用的元素的时机？</p>
+<p>A：    1. 当插入新元素，链表的大小超过了设置的最大容量时；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Caches &#123;<span class="doctag">@code</span> value&#125; for &#123;<span class="doctag">@code</span> key&#125;. The value is moved to the head of</span></span><br><span class="line"><span class="comment">     * the queue.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value mapped by &#123;<span class="doctag">@code</span> key&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span> || value == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"key == null || value == null"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    V previous;</span><br><span class="line">    <span class="comment">// 使用对象锁，支持多线程操作；</span></span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        putCount++;</span><br><span class="line">        <span class="comment">// 增加被添加元素的大小；</span></span><br><span class="line">        size += safeSizeOf(key, value);</span><br><span class="line">        previous = map.put(key, value);</span><br><span class="line">        <span class="keyword">if</span> (previous != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 减小被替换元素的大小。</span></span><br><span class="line">            size -= safeSizeOf(key, previous);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// 通知链表中的元素被删除（得到删除的通知后，我们可以针对被删除的元素做很多事情：释放资源等）</span></span><br><span class="line">    <span class="keyword">if</span> (previous != <span class="keyword">null</span>) &#123;</span><br><span class="line">        entryRemoved(<span class="keyword">false</span>, key, previous, value);</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// 插入元素后，检测是否超过了最大存储空间。</span></span><br><span class="line">    trimToSize(maxSize);</span><br><span class="line">    <span class="keyword">return</span> previous;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code>2. 手动调用`trimToSize`释放空间时；
+</code></pre><p>最近最少元素的删除都回归到了<code>trimToSize</code>方法，它是如何实现的？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Remove the eldest entries until the total of remaining entries is at or</span></span><br><span class="line"><span class="comment">     * below the requested size.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> maxSize the maximum size of the cache before returning. May be -1</span></span><br><span class="line"><span class="comment">     *            to evict even 0-sized elements.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">trimToSize</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        K key;</span><br><span class="line">        V value;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (size &lt; <span class="number">0</span> || (map.isEmpty() &amp;&amp; size != <span class="number">0</span>)) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(getClass().getName()</span><br><span class="line">                + <span class="string">".sizeOf() is reporting inconsistent results!"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// size最小是0，maxSize可能 &lt; 0(清空列表)，因此有必要再对toEvict是否为空进行判断;</span></span><br><span class="line">            <span class="keyword">if</span> (size &lt;= maxSize) &#123;</span><br><span class="line">             	<span class="comment">// 直到当前空间大小小于设置的最大值，则退出循环；</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 获取最近最少使用的元素（核心）</span></span><br><span class="line">                Map.Entry&lt;K, V&gt; toEvict = map.eldest();</span><br><span class="line">            <span class="keyword">if</span> (toEvict == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// 链表元素清除完毕，退出循环。</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 删除元素，释放空间；</span></span><br><span class="line">            key = toEvict.getKey();</span><br><span class="line">            value = toEvict.getValue();</span><br><span class="line">            map.remove(key);</span><br><span class="line">            size -= safeSizeOf(key, value);</span><br><span class="line">            evictionCount++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 通知元素被删除</span></span><br><span class="line">        entryRemoved(<span class="keyword">true</span>, key, value, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="良好的灵活性"><a href="#良好的灵活性" class="headerlink" title="良好的灵活性"></a>良好的灵活性</h4><ul>
+<li>数据结构采用范型，实现多类型的数据存储；</li>
+<li>通过复写<code>sizeOf</code>实现元素大小的计算可自定义；</li>
+<li>通过复写<code>create</code>实现空value时的可自定义；</li>
+<li>通过复写<code>entryRemoved</code>实现被删除元素的可监听性；</li>
+<li>通过<code>resize</code>接口实现最大存储空间的可定制性；</li>
+<li>通过<code>snapshot</code>获取当前链表的快照；</li>
+<li>通过<code>toString</code>可简单查看获取缓存元素时的击中率。</li>
+</ul>
+<p>从单个元素进入链表的之后的整个周期内，元素的清除和替换我们都可以观察到变化；甚至在获取元素为空时，我们都可以创建新的元素返回；从单个元素到整个链表，再到击中率/失败率的统计，都具有完善的体系。LruCache虽然代码量很小，但具有优秀的灵活性。</p>
+
       
     </div>
     
@@ -494,8 +556,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -555,6 +626,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#最大数据存储的限制"><span class="nav-number">1.</span> <span class="nav-text">最大数据存储的限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据的存储顺序"><span class="nav-number">2.</span> <span class="nav-text">数据的存储顺序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最近最少使用的数据的删除"><span class="nav-number">3.</span> <span class="nav-text">最近最少使用的数据的删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#良好的灵活性"><span class="nav-number">4.</span> <span class="nav-text">良好的灵活性</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
