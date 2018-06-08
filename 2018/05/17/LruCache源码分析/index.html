@@ -73,7 +73,7 @@
 
 
 
-  <meta name="keywords" content="LruCache,源码,分析," />
+  <meta name="keywords" content="源码,分析,LruCache," />
 
 
 
@@ -85,7 +85,7 @@
 
 
 <meta name="description" content="LruCache是内存缓存数据存储的经典方案，该存储结构通过删除最近最少使用的数据，以使最常用数据发挥更有效的作用。 LruCache的特点：  最大数据存储容量的限制； 按照数据的访问顺序排序； 最近最少使用的数据的管理； 良好的灵活性。">
-<meta name="keywords" content="LruCache,源码,分析">
+<meta name="keywords" content="源码,分析,LruCache">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LruCache源码思考">
 <meta property="og:url" content="http://csdroid.github.com/2018/05/17/LruCache源码分析/index.html">
@@ -477,11 +477,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/LruCache/" <i class="fa fa-tag"></i> LruCache</a>
-          
             <a href="/tags/源码/" <i class="fa fa-tag"></i> 源码</a>
           
             <a href="/tags/分析/" <i class="fa fa-tag"></i> 分析</a>
+          
+            <a href="/tags/LruCache/" <i class="fa fa-tag"></i> LruCache</a>
           
         </div>
       
@@ -503,6 +503,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/18/DiskLruCache源码思考/" rel="prev" title="DiskLruCache源码思考">
+                DiskLruCache源码思考 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -579,7 +583,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -601,7 +605,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -655,7 +659,6 @@
     <footer id="footer" class="footer">
       <div class="footer-inner">
         <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
 <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
@@ -675,8 +678,9 @@
 
 
 <span class="post-meta-divider">|</span>
-<i class="fa fa-user"></i> <span id="busuanzi_value_site_pv"></span>&nbsp&nbsp
-<i class="fa fa-eye"></i> <span id="busuanzi_value_site_uv"></span>
+<span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+<span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+
         
 
 
